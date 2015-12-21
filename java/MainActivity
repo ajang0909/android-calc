@@ -1,0 +1,160 @@
+package com.example.ajang.calculatorgrid;
+
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+    boolean zeroFront=true;
+    boolean decimalUsed=false;
+    boolean operateUsed=false;
+    boolean secNumEmpty=true;
+    boolean errorDisplayed=false;
+    String firstNum = null;
+    String calcOpp;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void getDigit (View num){
+        if (errorDisplayed) {
+            ((TextView) findViewById(R.id.calculation)).setText(null);
+           zeroFront=true;
+            decimalUsed=false;
+            operateUsed=false;
+            secNumEmpty=true;
+            errorDisplayed=false;
+        }
+        String digit = ((Button)num).getText().toString();
+
+        if (zeroFront && secNumEmpty)
+            ((TextView) findViewById(R.id.calculation)).setText(null);
+
+        ((TextView)findViewById(R.id.calculation)).setText(((TextView)findViewById(R.id.calculation)).getText().toString() + digit);
+
+        if (num != findViewById(R.id.zero))
+            zeroFront=false;
+
+        if (operateUsed && secNumEmpty) {
+            secNumEmpty = false;
+            ((TextView)findViewById(R.id.calculation)).setText(null);
+            ((TextView) findViewById(R.id.calculation)).setText(digit);
+        }
+    }//end of getDigit method
+
+    public void getDecimal (View num){
+        if (num==findViewById(R.id.decimal) && !decimalUsed) {
+            ((TextView) findViewById(R.id.calculation)).setText(((TextView) findViewById(R.id.calculation)).getText().toString() + ((Button) num).getText().toString());
+            decimalUsed=true;
+            zeroFront=false;
+        }
+    }//end of getDecimal method
+
+    public void getOperation (View operate){
+        String operation = ((Button)operate).getText().toString();
+        if (!operateUsed) {
+            firstNum = ((TextView) findViewById(R.id.calculation)).getText().toString();
+            ((TextView) findViewById(R.id.calculation)).setText(operation);
+            calcOpp = ((Button)operate).getText().toString();
+            operateUsed = true;
+            zeroFront = true;
+            decimalUsed = false;
+        }
+        else if (operateUsed && secNumEmpty){
+            ((TextView) findViewById(R.id.calculation)).setText(firstNum + operation);
+            calcOpp = ((Button)operate).getText().toString();
+        }
+    }//end of getOperation method
+
+    public void calculate(View calc) {
+        double num1 = Double.parseDouble(firstNum);
+        try {
+            double num2 = Double.parseDouble(((TextView) findViewById(R.id.calculation)).getText().toString());
+
+            double calculation;
+            if (calcOpp.equals("+")) {
+                calculation = num1 + num2;
+                String calcShow = new Double(calculation).toString();
+                firstNum = calcShow;
+                ((TextView) findViewById(R.id.calculation)).setText(calcShow);
+                zeroFront = true;
+                decimalUsed = false;
+                operateUsed = false;
+                secNumEmpty = true;
+            }
+
+            if (calcOpp.equals("-")) {
+                calculation = num1 - num2;
+                String calcShow = new Double(calculation).toString();
+                firstNum = calcShow;
+                ((TextView) findViewById(R.id.calculation)).setText(calcShow);
+                zeroFront = true;
+                decimalUsed = false;
+                operateUsed = false;
+                secNumEmpty = true;
+            }
+
+            if (calcOpp.equals("*")) {
+                calculation = num1 * num2;
+                String calcShow = new Double(calculation).toString();
+                firstNum = calcShow;
+                ((TextView) findViewById(R.id.calculation)).setText(calcShow);
+                zeroFront = true;
+                decimalUsed = false;
+                operateUsed = false;
+                secNumEmpty = true;
+            }
+
+            if (calcOpp.equals("/")) {
+                if (num2 == 0) {
+                    ((TextView) findViewById(R.id.calculation)).setText("Cannot Divide By Zero");
+                    errorDisplayed = true;
+                }
+                else {
+                    calculation = num1 / num2;
+                    String calcShow = new Double(calculation).toString();
+                    firstNum = calcShow;
+                    ((TextView) findViewById(R.id.calculation)).setText(calcShow);
+                    zeroFront = true;
+                    decimalUsed = false;
+                    operateUsed = false;
+                    secNumEmpty = true;
+                }
+            }
+        }catch(NumberFormatException e){
+            ((TextView) findViewById(R.id.calculation)).setText(e.getMessage());
+            errorDisplayed = true;
+        }
+
+    }//end of calculate
+
+}
